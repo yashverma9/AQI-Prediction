@@ -24,7 +24,7 @@ def predict_aqi(data: dict, filename: str) -> float:
 
 
 def getRecentJson():
-    df = pd.read_csv("data/AQI/recent.csv")
+    df = pd.read_csv("Model/data/AQI/recent.csv")
     date = df['date'].tolist()
     aqi = df['PM2.5'].tolist()
     dict = {"date": date , "aqi2.5" : aqi} 
@@ -63,7 +63,7 @@ def getPrediction():
 
 @app.route('/aqiMonthChart') #Also for weekly
 def aqiMonth():
-    return flask.jsonify(getRecentJson())
+    return jsonify(getRecentJson())
 
 
 
