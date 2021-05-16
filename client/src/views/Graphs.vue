@@ -58,9 +58,20 @@
 </template>
 
 <script>
+import axios from "axios";
 export default {
   name: "Graphs",
-  mounted() {
+  async mounted() {
+     let res = await axios.get(
+      "http://api.worldweatheronline.com/premium/v1/past-weather.ashx?tp=24&q=Bengaluru&date=2021-04-16&enddate=2021-05-15&key=2b0714b1fb8e4b38a93185230211605&format=json"
+    );
+    console.log(res.data.data.weather)
+    for(var i=0; i<res.data.data.weather.length;i++)
+    {
+      console.log(res.data.data.weather[i].date)
+      console.log(res.data.data.weather[i].hourly[0].humidity)
+      console.log(res.data.data.weather[i].avgtempC)
+    }
     g1();
   },
   data() {
