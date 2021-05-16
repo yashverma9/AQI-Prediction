@@ -25,9 +25,10 @@ def predict_aqi(data: dict, filename: str) -> float:
 
 def getRecentJson():
     df = pd.read_csv("Model/data/AQI/recent.csv")
+    
     date = df['date'].tolist()
     aqi = df['PM2.5'].tolist()
-    dict = {"date": date , "aqi2.5" : aqi} 
+    dict = {"date": date , "aqi2.5" : aqi }
     return dict
 
 
@@ -42,7 +43,7 @@ def getHello():
 def get_city_data() -> dict:
     city = request.args['city']
     api_key = '4b3b3ba35fcd7a3d24f3adc38895bbdd' #Fill here
-    url = f'https://api.openweathermap.org/data/2.5/weather?q={city}&APPID={api_key}&units=metric'
+    url = f'https://api.openweathermap.org/data/2.5/weather?q={city}&APPID={api_key}&units=metric'  #http://api.worldweatheronline.com/premium/v1/past-weather.ashx?tp=24&q=Bengaluru&date=2021-04-16&enddate=2021-05-15&key=2b0714b1fb8e4b38a93185230211605&format=json
     return jsonify(requests.get(url).json())
 
 
@@ -65,16 +66,6 @@ def getPrediction():
 def aqiMonth():
     return jsonify(getRecentJson())
 
-
-
-@app.route('/tempMonthChart')
-def tempMonth():
-    return
-
-
-@app.route('/humidityMonthChart')
-def humMonth():
-    return
 
 if __name__ == "__main__":
     app.run(debug=True, port = 5000)
