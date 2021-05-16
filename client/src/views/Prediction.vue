@@ -54,8 +54,40 @@
 </template>
 
 <script>
+import axios from "axios";
 export default {
   name: "Home",
+  async mounted() {
+    let response = await axios.get(
+      "https://api.openweathermap.org/data/2.5/weather?q=Bengaluru&APPID=4b3b3ba35fcd7a3d24f3adc38895bbdd&units=metric"
+    );
+    let pp = 0;
+     if (response) {
+          if (response.data.rain && response.data.rain['3h']) {
+            pp = response.data.rain['3h'];
+          }
+          else if (response.data.snow && response.data.snow['3h']) {
+            pp = response.data.snow['3h'];
+          }
+        }
+
+    console.log(response.data)
+      let params = {
+      T: response.data.main.temp,
+      TM : response.data.main.temp_max,
+      Tm : response.data.main.temp_min,
+      H : response.data.main.humidity,
+      PP : pp,
+      VV : Number(((response.data.visibility) / 1000).toFixed(2)),
+      V : Number(((response.data.wind.speed) * 1000 / 3600).toFixed(2)),
+      VM : Number(((response.data.wind.speed) * 1000 / 3600).toFixed(2))
+
+
+    };
+    console.log(params)
+
+    
+  },
   data() {
     return {};
   },
