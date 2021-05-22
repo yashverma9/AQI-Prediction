@@ -181,8 +181,8 @@ function g1(aqi_date, aqi, type, destroy) {
         {
           label: "AQI",
           data: aqi,
-          backgroundColor: ["#FFBD3D"],
-          borderColor: ["#FFBD3D"],
+          backgroundColor: [ , "white"],
+          borderColor: [ "white"],
           borderWidth: 1
         }
       ]
