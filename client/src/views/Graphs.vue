@@ -25,14 +25,19 @@
             <img style="width:40px; height:40px;" src="../images/graph.png" alt />
             <p>Graphs</p>
           </div>
-          <div class="button">
-            <p>Weekly</p>
+          <div class="buttons-parent">
+            <div @click="slice()" class="button">
+              <p>{{timeline}}</p>
+            </div>
+            <div @click="changeType()" style="margin-left:15px;" class="button">
+              <p>{{typename}}</p>
+            </div>
           </div>
         </div>
 
         <div class="content">
           <div class="graph-parent">
-            <p>Graph 1</p>
+            <p>AQI</p>
             <div class="chart-parent">
               <div class="chart-container">
                 <canvas id="myChart"></canvas>
@@ -40,16 +45,20 @@
             </div>
           </div>
           <div class="graph-parent">
-            <p>Graph 1</p>
+            <p>Temperature</p>
+            <div class="chart-parent">
+              <div class="chart-container">
+                <canvas id="myChart-two"></canvas>
+              </div>
+            </div>
           </div>
           <div class="graph-parent">
-            <p>Graph 1</p>
-          </div>
-          <div class="graph-parent">
-            <p>Graph 1</p>
-          </div>
-          <div class="graph-parent">
-            <p>Graph 1</p>
+            <p>Humidity</p>
+            <div class="chart-parent">
+              <div class="chart-container">
+                <canvas id="myChart-three"></canvas>
+              </div>
+            </div>
           </div>
         </div>
       </div>
@@ -74,6 +83,9 @@ export default {
     }
     this.aqi_date = restwo.data.date;
     this.aqi = restwo.data.aqi;
+    this.destroy = false;
+    this.type = "line";
+    this.timeline = "Monthly";
 
     //reverse
     // this.aqi_date =  this.aqi_date.reverse();
@@ -84,7 +96,7 @@ export default {
     // this.aqi_date.reverse();
     // this.aqi.reverse();
 
-    g1(this.aqi_date, this.aqi);
+    this.plotGraph();
   },
   data() {
     return {
@@ -92,44 +104,85 @@ export default {
       humidity: [],
       temp: [],
       aqi_date: [],
-      aqi: []
+      aqi: [],
+      type: "",
+      typename: "Line",
+      timeline: ""
     };
   },
   methods: {
     router(x) {
       this.$router.push(x);
+    },
+    plotGraph() {
+      g1(this.aqi_date, this.aqi, this.type);
+      g2(this.date, this.temp, this.type);
+      g3(this.date, this.humidity, this.type);
+    },
+    slice() {
+      if (this.timeline == "Monthly") {
+        destroy(chartobj);
+        g1(this.aqi_date.slice(23, 30), this.aqi.slice(23, 30), this.type);
+        g2(this.date.slice(23, 30), this.temp.slice(23, 30), this.type);
+        g3(this.date.slice(23, 30), this.humidity.slice(23, 30), this.type);
+        this.timeline = "Weekly";
+      } else {
+        destroy(chartobj);
+        this.plotGraph();
+        this.timeline = "Monthly";
+      }
+
+      // this.aqi_date.slice(0,22);
+      // console.log(this.humidity);
+      //  console.log(this.humidity.slice(23,30));
+    },
+    changeType() {
+      console.log("called");
+      if (this.type == "bar") {
+        this.type = "line";
+        this.typename = "Line";
+      } else {
+        this.type = "bar";
+        this.typename = "Bar";
+      }
+      destroy(chartobj);
+      // this.destroy = true;
+      // g1(this.aqi_date, this.aqi, this.type, this.destroy);
+      // console.log(this.type);
+      if (this.timeline == "Monthly") {
+        this.plotGraph();
+      } else {
+        g1(this.aqi_date.slice(23, 30), this.aqi.slice(23, 30), this.type);
+        g2(this.date.slice(23, 30), this.temp.slice(23, 30), this.type);
+        g3(this.date.slice(23, 30), this.humidity.slice(23, 30), this.type);
+      }
     }
   }
 };
 /* eslint-disable */
-function g1(aqi_date, aqi) {
-  console.log("called");
-  console.log(aqi_date);
+var chartobj = [];
+function destroy(chartobj) {
+  for (let i = 0; i < chartobj.length; i++) {
+    chartobj[i].destroy();
+  }
+}
+function g1(aqi_date, aqi, type, destroy) {
+ 
+  if (myChart) {
+    myChart.destroy();
+    console.log("destroyed");
+  }
   var ctx = document.getElementById("myChart");
   var myChart = new Chart(ctx, {
-    type: "bar",
+    type: type,
     data: {
       labels: aqi_date,
       datasets: [
         {
           label: "AQI",
           data: aqi,
-          backgroundColor: [
-            "rgba(255, 99, 132, 0.2)",
-            "rgba(54, 162, 235, 0.2)",
-            "rgba(255, 206, 86, 0.2)",
-            "rgba(75, 192, 192, 0.2)",
-            "rgba(153, 102, 255, 0.2)",
-            "rgba(255, 159, 64, 0.2)"
-          ],
-          borderColor: [
-            "rgba(255, 99, 132, 1)",
-            "rgba(54, 162, 235, 1)",
-            "rgba(255, 206, 86, 1)",
-            "rgba(75, 192, 192, 1)",
-            "rgba(153, 102, 255, 1)",
-            "rgba(255, 159, 64, 1)"
-          ],
+          backgroundColor: ["rgba(255, 99, 132, 0.2)"],
+          borderColor: ["rgba(255, 99, 132, 1)"],
           borderWidth: 1
         }
       ]
@@ -141,7 +194,129 @@ function g1(aqi_date, aqi) {
             color: "white",
             // Include a dollar sign in the ticks
             callback: function(value, index, values) {
-              return "$" + value;
+              return "" + value;
+            },
+            font: {
+              size: 16
+            }
+          },
+          beginAtZero: true
+        },
+
+        x: {
+          ticks: {
+            color: "white"
+          }
+        }
+      },
+
+      plugins: {
+        legend: {
+          display: true,
+          labels: {
+            color: "white",
+            font: {
+              size: 18
+            }
+          }
+        }
+      }
+    }
+  });
+  chartobj.push(myChart);
+  console.log(chartobj);
+}
+
+
+
+function g2(date, temp, type) {
+  console.log("called");
+  console.log(date);
+  console.log(temp);
+  var ctx = document.getElementById("myChart-two");
+  var myChart = new Chart(ctx, {
+    type: type,
+    data: {
+      labels: date,
+      datasets: [
+        {
+          label: "Temperature",
+          data: temp,
+          backgroundColor: ["rgba(255, 99, 132, 0.2)"],
+          borderColor: ["rgba(255, 99, 132, 1)"],
+          borderWidth: 1
+        }
+      ]
+    },
+    options: {
+      scales: {
+        y: {
+          ticks: {
+            color: "white",
+            // Include a dollar sign in the ticks
+            callback: function(value, index, values) {
+              return value + "°C";
+            },
+            font: {
+              size: 16
+            }
+          },
+          beginAtZero: true
+        },
+
+        x: {
+          ticks: {
+            color: "white"
+          }
+        }
+      },
+
+      plugins: {
+        legend: {
+          display: true,
+          labels: {
+            color: "white",
+            font: {
+              size: 18
+            }
+          }
+        }
+      }
+    }
+  });
+  chartobj.push(myChart);
+}
+
+function g3(date, humidity, type) {
+  console.log("called");
+  console.log(date);
+  console.log(humidity);
+  var ctx = document.getElementById("myChart-three");
+  var myChart = new Chart(ctx, {
+    type: type,
+    data: {
+      labels: date,
+      datasets: [
+        {
+          label: "Humidity",
+          data: humidity,
+          backgroundColor: ["rgba(255, 99, 132, 0.2)"],
+          borderColor: ["rgba(255, 99, 132, 1)"],
+          borderWidth: 1
+        }
+      ]
+    },
+    options: {
+      scales: {
+        y: {
+          ticks: {
+            color: "white",
+            // Include a dollar sign in the ticks
+            callback: function(value, index, values) {
+              return value + "%";
+            },
+            font: {
+              size: 16
             }
           },
           beginAtZero: true
@@ -150,9 +325,10 @@ function g1(aqi_date, aqi) {
         x: {
           ticks: {
             color: "white",
-    
-          },
-        
+            font: {
+             
+            }
+          }
         }
       },
 
@@ -160,13 +336,18 @@ function g1(aqi_date, aqi) {
         legend: {
           display: true,
           labels: {
-            color: "white"
+            color: "white",
+            font: {
+              size: 18
+            }
           }
         }
       }
     }
   });
+  chartobj.push(myChart);
 }
+console.log(chartobj);
 </script>
 
 <style lang="scss" scoped>
@@ -323,7 +504,7 @@ function g1(aqi_date, aqi) {
   margin: 0 auto;
   margin-bottom: 40px;
   width: 80%;
-  height: 55vh;
+  height: 27.5vw;
   background: #161389;
   box-shadow: 0px 4px 4px rgba(0, 0, 0, 0.25);
   border-radius: 4px;
@@ -362,5 +543,13 @@ function g1(aqi_date, aqi) {
   //border: dotted red;
   height: max-content;
   width: max-content;
+}
+
+.buttons-parent {
+  //border: solid red;
+  width: max-content;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
 }
 </style>
