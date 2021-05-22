@@ -181,8 +181,8 @@ function g1(aqi_date, aqi, type, destroy) {
         {
           label: "AQI",
           data: aqi,
-          backgroundColor: ["rgba(255, 99, 132, 0.2)"],
-          borderColor: ["rgba(255, 99, 132, 1)"],
+          backgroundColor: ["#FFBD3D"],
+          borderColor: ["#FFBD3D"],
           borderWidth: 1
         }
       ]
@@ -242,8 +242,8 @@ function g2(date, temp, type) {
         {
           label: "Temperature",
           data: temp,
-          backgroundColor: ["rgba(255, 99, 132, 0.2)"],
-          borderColor: ["rgba(255, 99, 132, 1)"],
+          backgroundColor: ["#D90A39"],
+          borderColor: ["#D90A39"],
           borderWidth: 1
         }
       ]
@@ -300,8 +300,8 @@ function g3(date, humidity, type) {
         {
           label: "Humidity",
           data: humidity,
-          backgroundColor: ["rgba(255, 99, 132, 0.2)"],
-          borderColor: ["rgba(255, 99, 132, 1)"],
+          backgroundColor: ["#29A744"],
+          borderColor: ["#29A744"],
           borderWidth: 1
         }
       ]
