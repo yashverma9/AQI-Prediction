@@ -26,7 +26,7 @@
             <p>Prediction</p>
           </div>
           <div class="button">
-            <p>2021-05-14 04:00</p>
+            <p>Forecast</p>
           </div>
         </div>
 
@@ -83,7 +83,7 @@ export default {
     };
     console.log(params);
 
-    this.getPredict(params);
+    // this.getPredict(params);
   },
   data() {
     return {};
@@ -137,6 +137,7 @@ export default {
   grid-column-start: 2;
   grid-column-end: 3;
   // border: solid blue;
+  animation: transitionIn 0.40s;
 }
 
 .logo-text {

@@ -107,7 +107,7 @@ export default {
       aqi: [],
       type: "",
       typename: "Line",
-      timeline: ""
+      timeline: "Monthly"
     };
   },
   methods: {
@@ -347,7 +347,7 @@ function g3(date, humidity, type) {
   });
   chartobj.push(myChart);
 }
-console.log(chartobj);
+
 </script>
 
 <style lang="scss" scoped>
@@ -384,6 +384,7 @@ console.log(chartobj);
   grid-column-start: 2;
   grid-column-end: 3;
   // border: solid blue;
+  animation: transitionIn 0.40s;
 }
 
 .logo-text {

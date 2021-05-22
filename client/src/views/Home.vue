@@ -4,7 +4,7 @@
       <div class="grid-item grid-item-3 nav"></div>
       <div class="grid-item grid-item-1">
         <div @click=" router('/')" class="logo-text">
-          <img  style="width:40px; heignt:40px;" src="../images/worldwide.png" alt />
+          <img style="width:40px; heignt:40px;" src="../images/worldwide.png" alt />
           <p>aqi</p>
         </div>
         <div class="button-parent">
@@ -26,7 +26,7 @@
             <p>Bangalore</p>
           </div>
           <div class="button">
-            <p>2021-05-14 04:00</p>
+            <p>{{date}}</p>
           </div>
         </div>
 
@@ -41,25 +41,17 @@
             </div>
           </div>
           <div class="params-parent">
-            <ul>
-              <li>
-                <div class="params">
-                  <p id="title">Temperature</p>
-
-                  <p id="value">33</p>
-                  <p id="unit">°C</p>
-                </div>
-              </li>
-              <li>
-                <div class="params"></div>
-              </li>
-              <li>
-                <div class="params"></div>
-              </li>
-              <li>
-                <div class="params"></div>
-              </li>
-            </ul>
+            <div class="abs-parent">
+              <ul>
+                <li v-for="(d,index) in data" :key="index">
+                  <div class="params">
+                    <p id="title">{{d.name}}</p>
+                    <p id="value">{{d.value}}</p>
+                    <p id="unit">{{d.unit}}</p>
+                  </div>
+                </li>
+              </ul>
+            </div>
           </div>
         </div>
       </div>
@@ -68,10 +60,53 @@
 </template>
 
 <script>
+import axios from "axios";
 export default {
   name: "Home",
+  async mounted() {
+    //Setting date
+    var date = new Date();
+    var n = date.toDateString();
+    this.date = n;
+    let res = await axios.get(
+      "https://api.openweathermap.org/data/2.5/weather?q=Bengaluru&APPID=4b3b3ba35fcd7a3d24f3adc38895bbdd&units=metric"
+    );
+    console.log(res.data);
+    let param = [
+      {
+        name: "Temperature",
+        value: res.data.main.temp,
+        unit: " °C"
+      },
+      {
+        name: "Humidity",
+        value: res.data.main.humidity,
+        unit: " %"
+      },
+      {
+        name: "Wind Speed",
+        value: Number(((res.data.wind.speed * 1000) / 3600).toFixed(2)),
+        unit: " °C"
+      },
+      {
+        name: "Visibility",
+        value: Number((res.data.visibility / 1000).toFixed(2)),
+        unit: " °C"
+      },
+      {
+        name: "Visibility",
+        value: Number((res.data.visibility / 1000).toFixed(2)),
+        unit: " °C"
+      }
+    ];
+    this.data = param;
+    console.log(this.data);
+  },
   data() {
-    return {};
+    return {
+      data: [],
+      date: ""
+    };
   },
   methods: {
     router(x) {
@@ -94,7 +129,7 @@ export default {
   grid-row-end: 2;
   grid-column-start: 2;
   grid-column-end: 3;
- // border: solid blue;
+  // border: solid blue;
   z-index: 1;
   display: flex;
   align-items: center;
@@ -106,7 +141,7 @@ export default {
   grid-row-end: 2;
   grid-column-start: 1;
   grid-column-end: 4;
- // border: solid blue;
+  // border: solid blue;
 }
 
 .grid-item-2 {
@@ -114,7 +149,8 @@ export default {
   grid-row-end: 3;
   grid-column-start: 2;
   grid-column-end: 3;
-// border: solid blue;
+  // border: solid blue;
+  animation: transitionIn 0.4s;
 }
 
 .logo-text {
@@ -282,7 +318,7 @@ export default {
 }
 .params-parent {
   position: absolute;
-  width: 82%;
+  width: 46vw;
   height: 300px;
   //border: solid red;
   top: 40%;
@@ -292,19 +328,33 @@ export default {
   // align-items: flex-start;
   // justify-content: flex-start;
   // flex-wrap: wrap;
+  //border: dotted red;
   ul {
     width: 100%;
 
     padding: 0;
+    margin: 0;
     list-style-type: none;
     display: flex;
-    justify-content: center;
+    justify-content: flex-start;
     flex-wrap: wrap;
+
+    position: absolute;
+    top: 0%;
+    left: 50%;
+    transform: translate(-50% )
   }
 
   li {
     margin: 1rem;
   }
+}
+
+.abs-parent{
+  height: 100%;
+  width: 100%;
+  position: relative;
+  //border: dotted rebeccapurple;
 }
 .params {
   width: 202px;
