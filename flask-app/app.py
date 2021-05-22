@@ -28,7 +28,7 @@ def getRecentJson():
     
     date = df['date'].tolist()
     aqi = df['PM2.5'].tolist()
-    dict = {"date": date , "aqi2.5" : aqi }
+    dict = {"date": date , "aqi" : aqi }
     return dict
 
 
@@ -63,6 +63,7 @@ def getPrediction():
 
 
 @app.route('/aqiMonthChart') #Also for weekly
+@cross_origin()
 def aqiMonth():
     return jsonify(getRecentJson())
 

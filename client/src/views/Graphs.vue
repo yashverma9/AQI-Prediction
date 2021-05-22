@@ -3,18 +3,18 @@
     <div class="grid-container">
       <div class="grid-item grid-item-3 nav"></div>
       <div class="grid-item grid-item-1">
-        <div @click=" router('/')" class="logo-text">
+        <div @click="router('/')" class="logo-text">
           <img style="width:40px; heignt:40px;" src="../images/worldwide.png" alt />
           <p>aqi</p>
         </div>
         <div class="button-parent">
-          <div @click=" router('/')" class="button" style>
+          <div @click="router('/')" class="button" style>
             <p>Home</p>
           </div>
-          <div @click=" router('Graphs')" class="button">
+          <div @click="router('Graphs')" class="button">
             <p>Graphs</p>
           </div>
-          <div @click=" router('Prediction')" class="button">
+          <div @click="router('Prediction')" class="button">
             <p>Prediction</p>
           </div>
         </div>
@@ -62,20 +62,38 @@ import axios from "axios";
 export default {
   name: "Graphs",
   async mounted() {
-     let res = await axios.get(
+    let res = await axios.get(
       "http://api.worldweatheronline.com/premium/v1/past-weather.ashx?tp=24&q=Bengaluru&date=2021-04-16&enddate=2021-05-15&key=2b0714b1fb8e4b38a93185230211605&format=json"
     );
-    console.log(res.data.data.weather)
-    for(var i=0; i<res.data.data.weather.length;i++)
-    {
-      console.log(res.data.data.weather[i].date)
-      console.log(res.data.data.weather[i].hourly[0].humidity)
-      console.log(res.data.data.weather[i].avgtempC)
+    let restwo = await axios.get("http://127.0.0.1:5000/aqiMonthChart");
+
+    for (var i = 0; i < res.data.data.weather.length; i++) {
+      this.date.push(res.data.data.weather[i].date);
+      this.humidity.push(res.data.data.weather[i].hourly[0].humidity);
+      this.temp.push(res.data.data.weather[i].avgtempC);
     }
-    g1();
+    this.aqi_date = restwo.data.date;
+    this.aqi = restwo.data.aqi;
+
+    //reverse
+    // this.aqi_date =  this.aqi_date.reverse();
+    // this.aqi.reverse();
+    // this.date.reverse();
+    // this.humidity.reverse();
+    // this.temp.reverse();
+    // this.aqi_date.reverse();
+    // this.aqi.reverse();
+
+    g1(this.aqi_date, this.aqi);
   },
   data() {
-    return {};
+    return {
+      date: [],
+      humidity: [],
+      temp: [],
+      aqi_date: [],
+      aqi: []
+    };
   },
   methods: {
     router(x) {
@@ -84,17 +102,18 @@ export default {
   }
 };
 /* eslint-disable */
-function g1() {
+function g1(aqi_date, aqi) {
   console.log("called");
+  console.log(aqi_date);
   var ctx = document.getElementById("myChart");
   var myChart = new Chart(ctx, {
     type: "bar",
     data: {
-      labels: ["Red", "Blue", "Yellow", "Green", "Purple", "Orange"],
+      labels: aqi_date,
       datasets: [
         {
-          label: "# of Votes",
-          data: [12, 19, 3, 5, 2, 3],
+          label: "AQI",
+          data: aqi,
           backgroundColor: [
             "rgba(255, 99, 132, 0.2)",
             "rgba(54, 162, 235, 0.2)",
@@ -118,7 +137,31 @@ function g1() {
     options: {
       scales: {
         y: {
+          ticks: {
+            color: "white",
+            // Include a dollar sign in the ticks
+            callback: function(value, index, values) {
+              return "$" + value;
+            }
+          },
           beginAtZero: true
+        },
+
+        x: {
+          ticks: {
+            color: "white",
+    
+          },
+        
+        }
+      },
+
+      plugins: {
+        legend: {
+          display: true,
+          labels: {
+            color: "white"
+          }
         }
       }
     }
@@ -315,7 +358,7 @@ function g1() {
   position: absolute;
   top: 18%;
   left: 50%;
-  transform: translate(-50% ,);
+  transform: translate(-50%);
   //border: dotted red;
   height: max-content;
   width: max-content;
