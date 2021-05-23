@@ -33,10 +33,10 @@
         <div class="content">
           <div class="aqi">
             <div class="aqi-inner">
-              <div class="aqi-val">
-                <p>299</p>
+              <div v-bind:style="{ background: color  }" class="aqi-val">
+                <p>{{aqi}}</p>
               </div>
-              <p id="status">Unhealthy</p>
+              <p id="status">{{status}}</p>
               <p id="tag">Predicted AQI</p>
             </div>
           </div>
@@ -83,10 +83,14 @@ export default {
     };
     console.log(params);
 
-    // this.getPredict(params);
+    this.getPredict(params);
   },
   data() {
-    return {};
+    return {
+      aqi: null,
+      status: "",
+      color: "#00CC00"
+    };
   },
   methods: {
     router(x) {
@@ -98,6 +102,21 @@ export default {
         params
       });
       console.log(res.data);
+      this.aqi = res.data;
+      if (this.aqi <= 30) {
+        this.status = "Good";
+        this.color = ""
+      } else if (this.aqi > 30 && this.aqi <= 60) {
+        this.status = "Satisfactory";
+      } else if (this.aqi > 60 && this.aqi <= 90) {
+        this.status = "Moderately polluted";
+      } else if (this.aqi > 90 && this.aqi <= 120) {
+        this.status = "Poor";
+      } else if (this.aqi > 120 && this.aqi <= 250) {
+        this.status = "Very Poor";
+      } else if (this.aqi > 250) {
+        this.status = "Severe";
+      }
     }
   }
 };
@@ -137,7 +156,7 @@ export default {
   grid-column-start: 2;
   grid-column-end: 3;
   // border: solid blue;
-  animation: transitionIn 0.40s;
+  animation: transitionIn 0.4s;
 }
 
 .logo-text {
@@ -264,7 +283,7 @@ export default {
   transform: translate(-50%, 0%);
   width: 76px;
   height: 37px;
-  background: #e10000;
+  // background: #e10000;
   border-radius: 4px;
   p {
     margin: 0;

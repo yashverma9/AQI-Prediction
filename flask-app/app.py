@@ -20,7 +20,7 @@ app.config['CORS_HEADERS'] = 'Content-Type'
 def predict_aqi(data: dict, filename: str) -> float:
     df = pd.DataFrame([data])
     model = pickle.load(open(filename, 'rb'))
-    return model.predict(df)[0]
+    return int(model.predict(df)[0])
 
 
 def getRecentJson():
@@ -53,8 +53,8 @@ def get_city_data() -> dict:
 def getPrediction():
     try:
         formData = request.json
-        print(formData)
-        result = str(predict_aqi(formData, 'xgb.pkl'))
+        print(formData['params'])
+        result = str(predict_aqi(formData['params'], 'xgb.pkl'))
     except:
         print(sys.exc_info())
         result = 'Server error'

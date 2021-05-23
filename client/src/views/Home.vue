@@ -76,28 +76,24 @@ export default {
       {
         name: "Temperature",
         value: res.data.main.temp,
-        unit: " °C"
+        unit: "°C"
       },
       {
         name: "Humidity",
         value: res.data.main.humidity,
-        unit: " %"
+        unit: "%"
       },
       {
         name: "Wind Speed",
         value: Number(((res.data.wind.speed * 1000) / 3600).toFixed(2)),
-        unit: " °C"
+        unit: "Km/h"
       },
       {
         name: "Visibility",
         value: Number((res.data.visibility / 1000).toFixed(2)),
-        unit: " °C"
+        unit: "Km"
       },
-      {
-        name: "Visibility",
-        value: Number((res.data.visibility / 1000).toFixed(2)),
-        unit: " °C"
-      }
+  
     ];
     this.data = param;
     console.log(this.data);
