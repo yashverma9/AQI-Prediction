@@ -33,10 +33,10 @@
         <div class="content">
           <div class="aqi">
             <div class="aqi-inner">
-              <div class="aqi-val">
-                <p>299</p>
+              <div    v-bind:style="{ background: color  }" class="aqi-val">
+                <p>{{aqi}}</p>
               </div>
-              <p id="status">Unhealthy</p>
+              <p id="status">{{status}}</p>
               <p id="tag">AQI</p>
             </div>
           </div>
@@ -68,6 +68,13 @@ export default {
     var date = new Date();
     var n = date.toDateString();
     this.date = n;
+
+      let restwo = await axios.get(
+      "https://api.waqi.info/feed/bangalore/?token=4a410c05fe249e46b247c4a8196b693139cd5210"
+    );
+    console.log(restwo.data)
+    this.calcaqi()
+    this.aqi = restwo.data.data.aqi
     let res = await axios.get(
       "https://api.openweathermap.org/data/2.5/weather?q=Bengaluru&APPID=4b3b3ba35fcd7a3d24f3adc38895bbdd&units=metric"
     );
@@ -101,12 +108,37 @@ export default {
   data() {
     return {
       data: [],
-      date: ""
+      date: "",
+      aqi:null,
+      color:"",
+      status:"",
     };
   },
   methods: {
     router(x) {
       this.$router.push(x);
+    },
+    calcaqi()
+    {
+       if (this.aqi <= 30) {
+        this.status = "Good";
+        this.color = "#00CC00"
+      } else if (this.aqi > 30 && this.aqi <= 60) {
+        this.status = "Satisfactory";
+        this.color = "#67CC01"
+      } else if (this.aqi > 60 && this.aqi <= 90) {
+        this.status = "Moderately polluted";
+        this.color = "#FFFE01"
+      } else if (this.aqi > 90 && this.aqi <= 120) {
+        this.status = "Poor";
+        this.color = "#FE9901"
+      } else if (this.aqi > 120 && this.aqi <= 250) {
+        this.status = "Very Poor";
+        this.color = "#FE0001"
+      } else if (this.aqi > 250) {
+        this.status = "Severe";
+        this.color = "#A52A2A"
+      }
     }
   }
 };
@@ -270,7 +302,7 @@ export default {
   transform: translate(-50%, 0%);
   width: 76px;
   height: 37px;
-  background: #e10000;
+  
   border-radius: 4px;
   p {
     margin: 0;
@@ -314,9 +346,9 @@ export default {
 }
 .params-parent {
   position: absolute;
-  width: 46vw;
+  width: 31vw;
   height: 300px;
-  //border: solid red;
+ // border: solid red;
   top: 40%;
   left: 50%;
   transform: translate(-50%, 0%);
@@ -332,7 +364,7 @@ export default {
     margin: 0;
     list-style-type: none;
     display: flex;
-    justify-content: flex-start;
+    justify-content: center;
     flex-wrap: wrap;
 
     position: absolute;
@@ -386,7 +418,7 @@ export default {
   transform: translate(0%, 0%);
   font-family: Poppins;
 
-  font-size: 36px;
+  font-size: 34px;
 
   color: #ffffff;
 }

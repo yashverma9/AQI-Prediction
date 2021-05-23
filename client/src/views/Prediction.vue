@@ -25,8 +25,8 @@
             <img style="width:40px; height:40px;" src="../images/placeholder.png" alt />
             <p>Prediction</p>
           </div>
-          <div class="button">
-            <p>Forecast</p>
+          <div @click="changeUser()" class="button">
+            <p>{{user}}</p>
           </div>
         </div>
 
@@ -43,7 +43,15 @@
           <div class="text">
             <ul>
               <li>
-                <p>um lacinia arcu eget nulla. Class aptent taciti sociosqu ad litora torquent per conubia nostra, per inceptos himenaeos. Curabitur sodales ligula in libero. Sed dignissim lacinia nunc. Curabitur tortor. Pellentesque nibh. Aenean quam. In scelerisque sem at dolor. Maecenas mattis. Sed convallis tristique sem. Proin ut ligula vel nunc egestas porttitor. Morbi lectus risus, iaculis vel, suscipit quis, luctus non, massa. Fusce ac turpis quis ligula lacinia aliquet. Mauris ipsum. Nulla metus metus, ullamcorper vel, tincidunt sed, euismod in, nibh. Quisque volutpat condimentum velit. Class aptent taciti sociosqu ad litora torquent per conubia nostra, per inceptos himenaeos. Nam nec ante. Sed lacinia, urna non tincidunt mattis, tortor neque adipiscing diam, a cursus ipsum ante quis turpis. Nulla facilisi. Ut fringilla. Suspendisse potenti. Nunc feugiat mi a tellus consequat imperdiet. Vestibulum sapien. Proin quam. Etiam ultrices. Suspendisse in justo eu magna luctus suscipit. Sed lectus. Integer euismod lacus luctus</p>
+                <p
+                  style="font-weight:bold;"
+                >Following precautions must be taken based on forecasted AQI value</p>
+              </li>
+            </ul>
+
+            <ul   style="list-style-type:inherit; margin-top:20px;">
+              <li v-for="(d,index) in final" :key="index">
+                <p>{{d}}</p>
               </li>
             </ul>
           </div>
@@ -58,6 +66,7 @@ import axios from "axios";
 export default {
   name: "Home",
   async mounted() {
+    this.user = "Causual";
     let response = await axios.get(
       "https://api.openweathermap.org/data/2.5/weather?q=Bengaluru&APPID=4b3b3ba35fcd7a3d24f3adc38895bbdd&units=metric"
     );
@@ -89,7 +98,12 @@ export default {
     return {
       aqi: null,
       status: "",
-      color: "#00CC00"
+      color: "",
+      precautions: [],
+      causual: [],
+      org: [],
+      user: "",
+      final: []
     };
   },
   methods: {
@@ -105,17 +119,85 @@ export default {
       this.aqi = res.data;
       if (this.aqi <= 30) {
         this.status = "Good";
-        this.color = ""
+        this.color = "#00CC00";
+        this.causual = [
+          "Go outdoor and enjoy the fresh breeze, play some games or have a brief walk!",
+          "No use of mask required, safe for all kinds of people."
+        ];
+        this.org = [
+          " The levels are very good, so take similar steps to maintain the same condition."
+        ];
       } else if (this.aqi > 30 && this.aqi <= 60) {
         this.status = "Satisfactory";
+        this.color = "#67CC01";
+        this.causual = [
+          " Normal air quality of majority of the population, though people with some severe health problems can avoid going out.",
+          "Use mask while going out if you face respiratory problems."
+        ];
+        this.org = [
+          "Conditions are good for most of the public, but release a health advisory for people with respiratory problem and suggest to wear a mask!"
+        ];
       } else if (this.aqi > 60 && this.aqi <= 90) {
         this.status = "Moderately polluted";
+        this.color = "#FFFE01";
+        this.causual = [
+          " Use mask if you are facing issues in breathing.",
+          "Avoid use of cars to avoid worsening the conditions."
+        ];
+        this.org = [
+          " Increase use of public transport compared to private transport by releasing relevant guidelines. Less cars on the road can make a difference.",
+          "Health advise to lungs patients to wear a mask."
+        ];
       } else if (this.aqi > 90 && this.aqi <= 120) {
         this.status = "Poor";
+        this.color = "#FE9901";
+        this.causual = [
+          "Engage in car pool if necessary to go out or use public transport.",
+          "Wear mask if facing any issues."
+        ];
+        this.org = [
+          "This is pretty bad condition and special rules should be released for the public. Announce few days as No Private Cars day (unless very urgent) to control the situation.",
+          " Mask a must for all facing health issues."
+        ];
       } else if (this.aqi > 120 && this.aqi <= 250) {
         this.status = "Very Poor";
+        this.color = "#FE0001";
+        this.causual = [
+          "Don't go out unless very urgent. If you do, prefer to wear a mask.",
+          "Use Air Purifiers at your home to improve air quality inside your home.",
+          "Only use public transport to avoid more pollution."
+        ];
+        this.org = [
+          " As the condition becomes worse, it is important to take some big steps like introducing odd-even day for cars.",
+          " Industries can also be given some hours to function to avoid more pollution.",
+          "For long term, electric solutions can be looked into."
+        ];
       } else if (this.aqi > 250) {
         this.status = "Severe";
+        this.color = "#A52A2A";
+        this.causual = [
+          "This is a very bad condition, and a mask is must for all.",
+          "Use Air Purifiers at home.",
+          "Use pubic transport instead of private unless very urgent."
+        ];
+        this.org = [
+          "This is the worst it can be and is very harmful for everyone's health. Health advisory and control on certain actions is very important.",
+          "Take some big steps like introducing odd-even day for cars.",
+          " Industries can also be given some hours to function to avoid more pollution.",
+          "For long term, electric solutions can be looked into."
+        ];
+      }
+      this.final = this.causual;
+      console.log(this.causual);
+      console.log(this.org);
+    },
+    changeUser() {
+      if (this.user == "Causual") {
+        this.user = "Organization";
+        this.final = this.org;
+      } else {
+        this.user = "Causual";
+        this.final = this.causual;
       }
     }
   }
@@ -330,14 +412,15 @@ export default {
   //   top: 45%;
   //   left: 50%;
   //   transform: translate(-50%, 0%);
-  width: 82%;
-  min-height: 300px;
-  max-height: max-content;
+  width: 60%;
+
+  height: max-content;
   margin: 0 auto;
   margin-top: 40px;
   background-color: white;
   border-radius: 4px;
-  padding-top: 10px;
+  padding-top: 15px;
+  padding-bottom: 15px;
 
   ul {
     list-style: none;
@@ -354,6 +437,7 @@ export default {
       font-size: 18px;
       color: black;
       text-align: left;
+      margin: 0;
     }
   }
 }
@@ -410,4 +494,6 @@ export default {
 
   color: #dadada;
 }
+
+////////@at-root
 </style>

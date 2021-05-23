@@ -27,10 +27,10 @@
           </div>
           <div class="buttons-parent">
             <div @click="slice()" class="button">
-              <p>{{timeline}}</p>
+              <p>{{ timeline }}</p>
             </div>
             <div @click="changeType()" style="margin-left:15px;" class="button">
-              <p>{{typename}}</p>
+              <p>{{ typename }}</p>
             </div>
           </div>
         </div>
@@ -71,13 +71,43 @@ import axios from "axios";
 export default {
   name: "Graphs",
   async mounted() {
+    //SETTING DATE
+    let dateObj = new Date();
+    let myDate =
+      dateObj.getUTCFullYear() +
+      "-" +
+      (dateObj.getMonth() + 1) +
+      "-" +
+      dateObj.getUTCDate();
+    let myDatee =
+      dateObj.getUTCFullYear() +
+      "-" +
+      dateObj.getMonth() +
+      "-" +
+      dateObj.getUTCDate();
+    var startdate = myDatee.toString();
+    var enddate = myDate.toString();
+
+    //SETTING DATE
+
+    // TRYING TO GET MONTHLY AQI
+    //   let aqi = await axios.get(
+    //     "http://api.openweathermap.org/data/2.5/air_pollution/history?lat=13&lon=77&start=1619182588&end=1621774588&appid=4b3b3ba35fcd7a3d24f3adc38895bbdd"
+    //   );
+    // console.log(aqi.data.list);
+    //   for (let i = 0; i < aqi.data.list.length; i++) {
+    //     console.log(convertUnix(aqi.data.list[i].dt));
+    //     console.log(aqi.data.list[i].main.aqi);
+    //   }
+    // END
+
     let res = await axios.get(
-      "http://api.worldweatheronline.com/premium/v1/past-weather.ashx?tp=24&q=Bengaluru&date=2021-04-16&enddate=2021-05-15&key=2b0714b1fb8e4b38a93185230211605&format=json"
+      `http://api.worldweatheronline.com/premium/v1/past-weather.ashx?tp=24&q=Bengaluru&date=${startdate}&enddate=${enddate}&key=2b0714b1fb8e4b38a93185230211605&format=json`
     );
     let restwo = await axios.get("http://127.0.0.1:5000/aqiMonthChart");
 
     for (var i = 0; i < res.data.data.weather.length; i++) {
-      this.date.push(res.data.data.weather[i].date);
+      this.date.push(convertDate(res.data.data.weather[i].date));
       this.humidity.push(res.data.data.weather[i].hourly[0].humidity);
       this.temp.push(res.data.data.weather[i].avgtempC);
     }
@@ -95,6 +125,11 @@ export default {
     // this.temp.reverse();
     // this.aqi_date.reverse();
     // this.aqi.reverse();
+
+    //converting aqi date to correct format
+    for (let i = 0; i < this.aqi_date.length; i++) {
+      this.aqi_date[i] = convertDate(this.aqi_date[i]);
+    }
 
     this.plotGraph();
   },
@@ -167,7 +202,6 @@ function destroy(chartobj) {
   }
 }
 function g1(aqi_date, aqi, type, destroy) {
- 
   if (myChart) {
     myChart.destroy();
     console.log("destroyed");
@@ -181,8 +215,8 @@ function g1(aqi_date, aqi, type, destroy) {
         {
           label: "AQI",
           data: aqi,
-          backgroundColor: [ , "white"],
-          borderColor: [ "white"],
+          backgroundColor: [, "white"],
+          borderColor: ["white"],
           borderWidth: 1
         }
       ]
@@ -197,7 +231,7 @@ function g1(aqi_date, aqi, type, destroy) {
               return "" + value;
             },
             font: {
-              size: 16
+              size: 18
             }
           },
           beginAtZero: true
@@ -205,7 +239,10 @@ function g1(aqi_date, aqi, type, destroy) {
 
         x: {
           ticks: {
-            color: "white"
+            color: "white",
+            font: {
+              size: 18
+            }
           }
         }
       },
@@ -226,8 +263,6 @@ function g1(aqi_date, aqi, type, destroy) {
   chartobj.push(myChart);
   console.log(chartobj);
 }
-
-
 
 function g2(date, temp, type) {
   console.log("called");
@@ -258,7 +293,7 @@ function g2(date, temp, type) {
               return value + "°C";
             },
             font: {
-              size: 16
+              size: 18
             }
           },
           beginAtZero: true
@@ -266,7 +301,10 @@ function g2(date, temp, type) {
 
         x: {
           ticks: {
-            color: "white"
+            color: "white",
+            font: {
+              size: 18
+            }
           }
         }
       },
@@ -316,7 +354,7 @@ function g3(date, humidity, type) {
               return value + "%";
             },
             font: {
-              size: 16
+              size: 18
             }
           },
           beginAtZero: true
@@ -326,7 +364,7 @@ function g3(date, humidity, type) {
           ticks: {
             color: "white",
             font: {
-             
+              size: 18
             }
           }
         }
@@ -348,6 +386,26 @@ function g3(date, humidity, type) {
   chartobj.push(myChart);
 }
 
+function convertDate(date) {
+  let dateObj = new Date(date);
+  let myDate =
+    dateObj.getUTCDate() +
+    "-" +
+    (dateObj.getMonth() + 1) +
+    "-" +
+    dateObj.getUTCFullYear();
+  var str = myDate.toString();
+  var result = str.slice(0, 5) + str.slice(7, 9);
+  return result;
+}
+
+function convertUnix(date) {
+  const milliseconds = date * 1000;
+  let dateObj = new Date(milliseconds);
+  let humanDateFormat = dateObj.toLocaleString();
+  let x = convertDate(humanDateFormat);
+  return x;
+}
 </script>
 
 <style lang="scss" scoped>
@@ -384,7 +442,7 @@ function g3(date, humidity, type) {
   grid-column-start: 2;
   grid-column-end: 3;
   // border: solid blue;
-  animation: transitionIn 0.40s;
+  animation: transitionIn 0.4s;
 }
 
 .logo-text {
@@ -451,6 +509,8 @@ function g3(date, humidity, type) {
   display: flex;
   align-items: center;
   justify-content: space-between;
+
+  //background-color: #ffffff;
 }
 .location-text {
   display: flex;
@@ -504,8 +564,8 @@ function g3(date, humidity, type) {
   position: relative;
   margin: 0 auto;
   margin-bottom: 40px;
-  width: 80%;
-  height: 27.5vw;
+  width: 95%;
+  height: 39.5vw;
   background: #161389;
   box-shadow: 0px 4px 4px rgba(0, 0, 0, 0.25);
   border-radius: 4px;
@@ -534,11 +594,11 @@ function g3(date, humidity, type) {
   //border: dotted green;
   position: relative;
   height: 20vh;
-  width: 40vw;
+  width: 68vw;
 }
 .chart-parent {
   position: absolute;
-  top: 18%;
+  top: 10%;
   left: 50%;
   transform: translate(-50%);
   //border: dotted red;
@@ -552,5 +612,8 @@ function g3(date, humidity, type) {
   display: flex;
   justify-content: space-between;
   align-items: center;
+  //   position: sticky;
+  // top: 0%;
+  // z-index: 2;
 }
 </style>
