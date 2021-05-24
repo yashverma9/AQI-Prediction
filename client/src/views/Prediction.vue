@@ -7,7 +7,7 @@
           <img style="width:40px; heignt:40px;" src="../images/worldwide.png" alt />
           <p>aqi</p>
         </div>
-        <div class="button-parent">
+        <div class="button-parent hide-for-mobile">
           <div @click=" router('/')" class="button" style>
             <p>Home</p>
           </div>
@@ -18,6 +18,7 @@
             <p>Prediction</p>
           </div>
         </div>
+        <Nav />
       </div>
       <div class="grid-item grid-item-2">
         <div class="header-content">
@@ -49,7 +50,7 @@
               </li>
             </ul>
 
-            <ul   style="list-style-type:inherit; margin-top:20px;">
+            <ul style="list-style-type:inherit; margin-top:20px;">
               <li v-for="(d,index) in final" :key="index">
                 <p>{{d}}</p>
               </li>
@@ -63,10 +64,16 @@
 
 <script>
 import axios from "axios";
+import Nav from "../components/Nav.vue";
 export default {
   name: "Home",
+  components: {
+    Nav
+  },
   async mounted() {
+    nav();
     this.user = "Causual";
+
     let response = await axios.get(
       "https://api.openweathermap.org/data/2.5/weather?q=Bengaluru&APPID=4b3b3ba35fcd7a3d24f3adc38895bbdd&units=metric"
     );
@@ -112,9 +119,12 @@ export default {
     },
     async getPredict(params) {
       console.log(params);
-      let res = await axios.post("http://127.0.0.1:5000/getPrediction", {
-        params
-      });
+      let res = await axios.post(
+        "https://aqi-backend.herokuapp.com/getPrediction",
+        {
+          params
+        }
+      );
       console.log(res.data);
       this.aqi = res.data;
       if (this.aqi <= 30) {
@@ -202,6 +212,37 @@ export default {
     }
   }
 };
+/* eslint-disable */
+function nav() {
+  let burger = document.getElementById("burger"),
+    nav = document.getElementById("main-nav"),
+    slowmo = document.getElementById("slowmo");
+
+  console.log(burger);
+  console.log(nav);
+  console.log(slowmo);
+
+  burger.addEventListener("click", function(e) {
+    this.classList.toggle("is-open");
+    nav.classList.toggle("is-open");
+  });
+
+  /* Onload demo - dirty timeout */
+  let clickEvent = new Event("click");
+
+  window.addEventListener("load", function(e) {
+    slowmo.dispatchEvent(clickEvent);
+    burger.dispatchEvent(clickEvent);
+
+    setTimeout(function() {
+      burger.dispatchEvent(clickEvent);
+
+      setTimeout(function() {
+        slowmo.dispatchEvent(clickEvent);
+      }, 3500);
+    }, 5500);
+  });
+}
 </script>
 
 <style lang="scss" scoped>
@@ -496,4 +537,157 @@ export default {
 }
 
 ////////@at-root
+
+@media only screen and (max-width: 1024px) {
+  .grid-container {
+    display: grid;
+    grid-template-columns: 2vw 96vw 2vw;
+    grid-template-rows: 60px calc(100vh - 60px);
+  }
+
+  .grid-item-1 {
+    grid-row-start: 1;
+    grid-row-end: 2;
+    grid-column-start: 2;
+    grid-column-end: 3;
+    // border: solid blue;
+    z-index: 1;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+
+  .grid-item-3 {
+    grid-row-start: 1;
+    grid-row-end: 2;
+    grid-column-start: 1;
+    grid-column-end: 4;
+    // border: solid blue;
+  }
+
+  .grid-item-2 {
+    grid-row-start: 2;
+    grid-row-end: 3;
+    grid-column-start: 2;
+    grid-column-end: 3;
+    // border: solid blue;
+    animation: transitionIn 0.4s;
+    height: max-content;
+    padding-bottom: 10px;
+  }
+
+  .logo-text {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    // border: dotted red;
+    width: 106px;
+    height: 100%;
+    p {
+      font-family: "Reem Kufi", sans-serif;
+
+      font-style: normal;
+      font-weight: normal;
+      font-size: 43px;
+      line-height: 72px;
+      /* identical to box height */
+
+      color: #ffffff;
+    }
+  }
+
+  .location-text {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    // border: dotted forestgreen;
+    width: 154px;
+    height: 100%;
+
+    p {
+      font-family: "Poppins";
+      font-style: normal;
+      font-weight: normal;
+      font-size: 30px;
+      line-height: 54px;
+      /* identical to box height */
+
+      color: #000000;
+    }
+    img {
+      width: 35px !important;
+      height: 35px !important;
+    }
+  }
+  .button {
+    background: #ffc700;
+    border-radius: 4px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    max-height: 37px;
+    width: max-content;
+    padding-left: 10px;
+    padding-right: 10px;
+    p {
+      font-family: "Poppins";
+      font-style: normal;
+      font-weight: normal;
+      font-size: 16px;
+      line-height: 27px;
+      /* identical to box height */
+
+      color: #000000;
+    }
+  }
+
+  .text {
+    //   position: absolute;
+    //   top: 45%;
+    //   left: 50%;
+    //   transform: translate(-50%, 0%);
+    width: 93%;
+
+    height: max-content;
+    margin: 0 auto;
+    margin-top: 40px;
+    background-color: white;
+    border-radius: 4px;
+    padding-top: 15px;
+    padding-bottom: 15px;
+
+    ul {
+      list-style: none;
+      width: 80%;
+      margin: 0 auto;
+
+      padding: 0;
+    }
+
+    li {
+      padding-bottom: 10px;
+      p {
+        font-family: Poppins;
+        font-size: 18px;
+        color: black;
+        text-align: left;
+        margin: 0;
+      }
+    }
+  }
+
+  .aqi {
+    //   position: absolute;
+    width: 90vw;
+    height: 170px;
+    //   top: 6%;
+    //   left: 50%;
+    //   transform: translate(-50%, 0%);
+    margin: 0 auto;
+
+    background: #161389;
+    box-shadow: 0px 4px 4px rgba(0, 0, 0, 0.25);
+    border-radius: 4px;
+  }
+}
 </style>

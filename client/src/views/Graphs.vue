@@ -7,7 +7,7 @@
           <img style="width:40px; heignt:40px;" src="../images/worldwide.png" alt />
           <p>aqi</p>
         </div>
-        <div class="button-parent">
+        <div class="button-parent hide-for-mobile">
           <div @click="router('/')" class="button" style>
             <p>Home</p>
           </div>
@@ -18,6 +18,7 @@
             <p>Prediction</p>
           </div>
         </div>
+        <Nav />
       </div>
       <div class="grid-item grid-item-2">
         <div class="header-content">
@@ -61,6 +62,7 @@
             </div>
           </div>
         </div>
+        <div class="space hide-for-dekstop">fsdasd</div>
       </div>
     </div>
   </div>
@@ -68,9 +70,15 @@
 
 <script>
 import axios from "axios";
+import Nav from "../components/Nav.vue";
 export default {
   name: "Graphs",
+  components: {
+    Nav
+  },
   async mounted() {
+    nav();
+    console.log(screen.width);
     //SETTING DATE
     let dateObj = new Date();
     let myDate =
@@ -104,7 +112,9 @@ export default {
     let res = await axios.get(
       `http://api.worldweatheronline.com/premium/v1/past-weather.ashx?tp=24&q=Bengaluru&date=${startdate}&enddate=${enddate}&key=2b0714b1fb8e4b38a93185230211605&format=json`
     );
-    let restwo = await axios.get("http://127.0.0.1:5000/aqiMonthChart");
+    let restwo = await axios.get(
+      "https://aqi-backend.herokuapp.com/aqiMonthChart"
+    );
 
     for (var i = 0; i < res.data.data.weather.length; i++) {
       this.date.push(convertDate(res.data.data.weather[i].date));
@@ -114,8 +124,23 @@ export default {
     this.aqi_date = restwo.data.date;
     this.aqi = restwo.data.aqi;
     this.destroy = false;
-    this.type = "line";
-    this.timeline = "Monthly";
+    for (let i = 0; i < this.aqi_date.length; i++) {
+      this.aqi_date[i] = convertDate(this.aqi_date[i]);
+    }
+    if (screen.width == 1024 || screen.width < 1024) {
+      this.type = "line";
+      this.typename = "Line";
+      this.timeline = "Weekly";
+      this.font = 14;
+      this.plotGraphWeekly(this.font);
+    } else {
+      this.type = "line";
+      this.timeline = "Monthly";
+      this.typename = "Line";
+      this.font = 18;
+      this.plotGraph(this.font);
+    }
+    console.log(this.font);
 
     //reverse
     // this.aqi_date =  this.aqi_date.reverse();
@@ -127,11 +152,6 @@ export default {
     // this.aqi.reverse();
 
     //converting aqi date to correct format
-    for (let i = 0; i < this.aqi_date.length; i++) {
-      this.aqi_date[i] = convertDate(this.aqi_date[i]);
-    }
-
-    this.plotGraph();
   },
   data() {
     return {
@@ -141,25 +161,46 @@ export default {
       aqi_date: [],
       aqi: [],
       type: "",
-      typename: "Line",
-      timeline: "Monthly"
+      typename: "",
+      timeline: "",
+      font: null
     };
   },
   methods: {
     router(x) {
       this.$router.push(x);
     },
-    plotGraph() {
-      g1(this.aqi_date, this.aqi, this.type);
-      g2(this.date, this.temp, this.type);
-      g3(this.date, this.humidity, this.type);
+    plotGraph(font) {
+      g1(this.aqi_date, this.aqi, this.type, font);
+      g2(this.date, this.temp, this.type, font);
+      g3(this.date, this.humidity, this.type, font);
+    },
+    plotGraphWeekly(font) {
+      g1(this.aqi_date.slice(23, 30), this.aqi.slice(23, 30), this.type, font);
+      g2(this.date.slice(23, 30), this.temp.slice(23, 30), this.type, font);
+      g3(this.date.slice(23, 30), this.humidity.slice(23, 30), this.type, font);
     },
     slice() {
       if (this.timeline == "Monthly") {
         destroy(chartobj);
-        g1(this.aqi_date.slice(23, 30), this.aqi.slice(23, 30), this.type);
-        g2(this.date.slice(23, 30), this.temp.slice(23, 30), this.type);
-        g3(this.date.slice(23, 30), this.humidity.slice(23, 30), this.type);
+        g1(
+          this.aqi_date.slice(23, 30),
+          this.aqi.slice(23, 30),
+          this.type,
+          this.font
+        );
+        g2(
+          this.date.slice(23, 30),
+          this.temp.slice(23, 30),
+          this.type,
+          this.font
+        );
+        g3(
+          this.date.slice(23, 30),
+          this.humidity.slice(23, 30),
+          this.type,
+          this.font
+        );
         this.timeline = "Weekly";
       } else {
         destroy(chartobj);
@@ -185,11 +226,26 @@ export default {
       // g1(this.aqi_date, this.aqi, this.type, this.destroy);
       // console.log(this.type);
       if (this.timeline == "Monthly") {
-        this.plotGraph();
+        this.plotGraph(this.font);
       } else {
-        g1(this.aqi_date.slice(23, 30), this.aqi.slice(23, 30), this.type);
-        g2(this.date.slice(23, 30), this.temp.slice(23, 30), this.type);
-        g3(this.date.slice(23, 30), this.humidity.slice(23, 30), this.type);
+        g1(
+          this.aqi_date.slice(23, 30),
+          this.aqi.slice(23, 30),
+          this.type,
+          this.font
+        );
+        g2(
+          this.date.slice(23, 30),
+          this.temp.slice(23, 30),
+          this.type,
+          this.font
+        );
+        g3(
+          this.date.slice(23, 30),
+          this.humidity.slice(23, 30),
+          this.type,
+          this.font
+        );
       }
     }
   }
@@ -201,7 +257,7 @@ function destroy(chartobj) {
     chartobj[i].destroy();
   }
 }
-function g1(aqi_date, aqi, type, destroy) {
+function g1(aqi_date, aqi, type, font) {
   if (myChart) {
     myChart.destroy();
     console.log("destroyed");
@@ -231,7 +287,7 @@ function g1(aqi_date, aqi, type, destroy) {
               return "" + value;
             },
             font: {
-              size: 18
+              size: font
             }
           },
           beginAtZero: true
@@ -241,7 +297,7 @@ function g1(aqi_date, aqi, type, destroy) {
           ticks: {
             color: "white",
             font: {
-              size: 18
+              size: font
             }
           }
         }
@@ -253,7 +309,7 @@ function g1(aqi_date, aqi, type, destroy) {
           labels: {
             color: "white",
             font: {
-              size: 18
+              size: font
             }
           }
         }
@@ -264,7 +320,7 @@ function g1(aqi_date, aqi, type, destroy) {
   console.log(chartobj);
 }
 
-function g2(date, temp, type) {
+function g2(date, temp, type, font) {
   console.log("called");
   console.log(date);
   console.log(temp);
@@ -293,7 +349,7 @@ function g2(date, temp, type) {
               return value + "°C";
             },
             font: {
-              size: 18
+              size: font
             }
           },
           beginAtZero: true
@@ -303,7 +359,7 @@ function g2(date, temp, type) {
           ticks: {
             color: "white",
             font: {
-              size: 18
+              size: font
             }
           }
         }
@@ -315,7 +371,7 @@ function g2(date, temp, type) {
           labels: {
             color: "white",
             font: {
-              size: 18
+              size: font
             }
           }
         }
@@ -325,7 +381,7 @@ function g2(date, temp, type) {
   chartobj.push(myChart);
 }
 
-function g3(date, humidity, type) {
+function g3(date, humidity, type, font) {
   console.log("called");
   console.log(date);
   console.log(humidity);
@@ -354,7 +410,7 @@ function g3(date, humidity, type) {
               return value + "%";
             },
             font: {
-              size: 18
+              size: font
             }
           },
           beginAtZero: true
@@ -364,7 +420,7 @@ function g3(date, humidity, type) {
           ticks: {
             color: "white",
             font: {
-              size: 18
+              size: font
             }
           }
         }
@@ -376,7 +432,7 @@ function g3(date, humidity, type) {
           labels: {
             color: "white",
             font: {
-              size: 18
+              size: font
             }
           }
         }
@@ -405,6 +461,37 @@ function convertUnix(date) {
   let humanDateFormat = dateObj.toLocaleString();
   let x = convertDate(humanDateFormat);
   return x;
+}
+
+function nav() {
+  let burger = document.getElementById("burger"),
+    nav = document.getElementById("main-nav"),
+    slowmo = document.getElementById("slowmo");
+
+  console.log(burger);
+  console.log(nav);
+  console.log(slowmo);
+
+  burger.addEventListener("click", function(e) {
+    this.classList.toggle("is-open");
+    nav.classList.toggle("is-open");
+  });
+
+  /* Onload demo - dirty timeout */
+  let clickEvent = new Event("click");
+
+  window.addEventListener("load", function(e) {
+    slowmo.dispatchEvent(clickEvent);
+    burger.dispatchEvent(clickEvent);
+
+    setTimeout(function() {
+      burger.dispatchEvent(clickEvent);
+
+      setTimeout(function() {
+        slowmo.dispatchEvent(clickEvent);
+      }, 3500);
+    }, 5500);
+  });
 }
 </script>
 
@@ -615,5 +702,179 @@ function convertUnix(date) {
   //   position: sticky;
   // top: 0%;
   // z-index: 2;
+}
+
+@media only screen and (max-width: 1024px) {
+  .grid-container {
+    display: grid;
+    grid-template-columns: 2vw 96vw 2vw;
+    grid-template-rows: 60px calc(100vh - 60px);
+  }
+
+  .grid-item-1 {
+    grid-row-start: 1;
+    grid-row-end: 2;
+    grid-column-start: 2;
+    grid-column-end: 3;
+    // border: solid blue;
+    z-index: 1;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+
+  .grid-item-3 {
+    grid-row-start: 1;
+    grid-row-end: 2;
+    grid-column-start: 1;
+    grid-column-end: 4;
+    // border: solid blue;
+  }
+
+  .grid-item-2 {
+    grid-row-start: 2;
+    grid-row-end: 3;
+    grid-column-start: 2;
+    grid-column-end: 3;
+    // border: solid blue;
+    animation: transitionIn 0.4s;
+    height: max-content;
+    padding-bottom: 10px;
+  }
+
+  .logo-text {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    // border: dotted red;
+    width: 106px;
+    height: 100%;
+    p {
+      font-family: "Reem Kufi", sans-serif;
+
+      font-style: normal;
+      font-weight: normal;
+      font-size: 43px;
+      line-height: 72px;
+      /* identical to box height */
+
+      color: #ffffff;
+    }
+  }
+
+  .location-text {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    // border: dotted forestgreen;
+    width: 154px;
+    height: 100%;
+
+    p {
+      font-family: "Poppins";
+      font-style: normal;
+      font-weight: normal;
+      font-size: 30px;
+      line-height: 54px;
+      /* identical to box height */
+
+      color: #000000;
+    }
+    img {
+      width: 35px !important;
+      height: 35px !important;
+    }
+  }
+  .button {
+    background: #ffc700;
+    border-radius: 4px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    max-height: 37px;
+    width: max-content;
+    padding-left: 10px;
+    padding-right: 10px;
+    p {
+      font-family: "Poppins";
+      font-style: normal;
+      font-weight: normal;
+      font-size: 16px;
+      line-height: 27px;
+      /* identical to box height */
+
+      color: #000000;
+    }
+  }
+
+  .graph-parent {
+    position: relative;
+    margin: 0 auto;
+    margin-bottom: 40px;
+    width: 95%;
+    height: 60vw;
+    background: #161389;
+    box-shadow: 0px 4px 4px rgba(0, 0, 0, 0.25);
+    border-radius: 4px;
+    p {
+      padding: 0;
+      margin: 0;
+      font-family: Poppins;
+      font-style: normal;
+      font-weight: normal;
+      font-size: 24px;
+      line-height: 36px;
+      /* identical to box height */
+
+      color: #ffffff;
+      position: absolute;
+      top: 4%;
+      left: 2%;
+    }
+  }
+  .chart-container {
+    //border: dotted green;
+    position: relative;
+    height: 20vh;
+    width: 87vw;
+  }
+  .chart-parent {
+    position: absolute;
+    top: 22%;
+    left: 50%;
+    transform: translate(-50%);
+    //border: dotted red;
+    height: max-content;
+    width: max-content;
+  }
+
+  .content {
+    background-color: #3c37ff;
+    box-shadow: 0px 0px 4px rgba(0, 0, 0, 0.25);
+    border-radius: 4px;
+    width: 100%;
+    height: max-content;
+    padding-top: 40px;
+    padding-bottom: 10px;
+    position: relative;
+
+    // margin-top: 20px;
+    //   ul {
+    //     // position: absolute;
+    //     // top: 10%;
+    //     // left: 50%;
+    //     // transform: translate(-50%, 0%);
+    //     // width: 100%;
+    //     // height: 100%;
+    //     list-style-type: none;
+    //     margin: 0;
+    //     padding: 0;
+    //     margin: 0 auto;
+    //   }
+    //   li {
+    //     margin-bottom: 40px;
+    //   }
+  }
+  //end
 }
 </style>
