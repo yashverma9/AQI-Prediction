@@ -31,14 +31,36 @@ body {
   cursor: pointer;
 }
 
+  .logo-text {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    // border: dotted red;
+    width: 106px;
+    height: 100%;
+    p {
+      font-family: "Reem Kufi", sans-serif;
+      text-align: center;
+      
+      font-size: 43px;
+      
+      /* identical to box height */
+
+      color: #ffffff;
+      margin: 0;
+      margin-bottom: 10px;
+      padding: 0;
+    }
+  }
+
 .hide-for-dekstop {
   display: none;
 }
 
 @media only screen and (max-width: 1024px) {
   .hide-for-dekstop {
-  display: block;
-}
+    display: block;
+  }
   .hide-for-mobile {
     display: none !important;
   }
@@ -170,7 +192,6 @@ body {
   text-decoration: none;
   font-weight: bold;
   font-family: "Poppins";
-
 }
 
 /* Burger Style: @see: https://codepen.io/CreativeJuiz/full/oMZNXy */

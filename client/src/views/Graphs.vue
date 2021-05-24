@@ -62,7 +62,6 @@
             </div>
           </div>
         </div>
-        <div class="space hide-for-dekstop">fsdasd</div>
       </div>
     </div>
   </div>
@@ -78,7 +77,7 @@ export default {
   },
   async mounted() {
     nav();
-    console.log(screen.width);
+
     //SETTING DATE
     let dateObj = new Date();
     let myDate =
@@ -140,7 +139,6 @@ export default {
       this.font = 18;
       this.plotGraph(this.font);
     }
-    console.log(this.font);
 
     //reverse
     // this.aqi_date =  this.aqi_date.reverse();
@@ -161,8 +159,8 @@ export default {
       aqi_date: [],
       aqi: [],
       type: "",
-      typename: "",
-      timeline: "",
+      typename: ". . . .",
+      timeline: "Loading",
       font: null
     };
   },
@@ -207,13 +205,8 @@ export default {
         this.plotGraph();
         this.timeline = "Monthly";
       }
-
-      // this.aqi_date.slice(0,22);
-      // console.log(this.humidity);
-      //  console.log(this.humidity.slice(23,30));
     },
     changeType() {
-      console.log("called");
       if (this.type == "bar") {
         this.type = "line";
         this.typename = "Line";
@@ -222,9 +215,7 @@ export default {
         this.typename = "Bar";
       }
       destroy(chartobj);
-      // this.destroy = true;
-      // g1(this.aqi_date, this.aqi, this.type, this.destroy);
-      // console.log(this.type);
+
       if (this.timeline == "Monthly") {
         this.plotGraph(this.font);
       } else {
@@ -260,7 +251,6 @@ function destroy(chartobj) {
 function g1(aqi_date, aqi, type, font) {
   if (myChart) {
     myChart.destroy();
-    console.log("destroyed");
   }
   var ctx = document.getElementById("myChart");
   var myChart = new Chart(ctx, {
@@ -317,13 +307,9 @@ function g1(aqi_date, aqi, type, font) {
     }
   });
   chartobj.push(myChart);
-  console.log(chartobj);
 }
 
 function g2(date, temp, type, font) {
-  console.log("called");
-  console.log(date);
-  console.log(temp);
   var ctx = document.getElementById("myChart-two");
   var myChart = new Chart(ctx, {
     type: type,
@@ -382,9 +368,6 @@ function g2(date, temp, type, font) {
 }
 
 function g3(date, humidity, type, font) {
-  console.log("called");
-  console.log(date);
-  console.log(humidity);
   var ctx = document.getElementById("myChart-three");
   var myChart = new Chart(ctx, {
     type: type,
@@ -468,10 +451,6 @@ function nav() {
     nav = document.getElementById("main-nav"),
     slowmo = document.getElementById("slowmo");
 
-  console.log(burger);
-  console.log(nav);
-  console.log(slowmo);
-
   burger.addEventListener("click", function(e) {
     this.classList.toggle("is-open");
     nav.classList.toggle("is-open");
@@ -541,7 +520,7 @@ function nav() {
   height: 100%;
   p {
     font-family: "Reem Kufi", sans-serif;
-
+    text-align: center;
     font-style: normal;
     font-weight: normal;
     font-size: 48px;
@@ -751,6 +730,7 @@ function nav() {
     height: 100%;
     p {
       font-family: "Reem Kufi", sans-serif;
+      text-align: center;
 
       font-style: normal;
       font-weight: normal;

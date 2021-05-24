@@ -19,7 +19,7 @@
           </div>
         </div>
 
-        <Nav  />
+        <Nav />
       </div>
       <div class="grid-item grid-item-2">
         <div class="header-content">
@@ -41,7 +41,7 @@
         <div class="content">
           <div class="aqi">
             <div class="aqi-inner">
-              <div v-bind:style="{ background: color  }" class="aqi-val">
+              <div v-bind:style="{ background: color }" class="aqi-val">
                 <p>{{aqi}}</p>
               </div>
               <p id="status">{{status}}</p>
@@ -62,7 +62,6 @@
             </div>
           </div>
         </div>
-        <div class="space hide-for-dekstop"></div>
       </div>
     </div>
   </div>
@@ -86,13 +85,14 @@ export default {
     let restwo = await axios.get(
       "https://api.waqi.info/feed/bangalore/?token=4a410c05fe249e46b247c4a8196b693139cd5210"
     );
-    console.log(restwo.data);
-    this.calcaqi();
+
+    
     this.aqi = restwo.data.data.aqi;
+    this.calcaqi();
     let res = await axios.get(
       "https://api.openweathermap.org/data/2.5/weather?q=Bengaluru&APPID=4b3b3ba35fcd7a3d24f3adc38895bbdd&units=metric"
     );
-    console.log(res.data);
+
     let param = [
       {
         name: "Temperature",
@@ -116,13 +116,12 @@ export default {
       }
     ];
     this.data = param;
-    console.log(this.data);
   },
   data() {
     return {
       data: [],
       date: "",
-      aqi: null,
+      aqi: "Loading",
       color: "",
       status: ""
     };
@@ -159,10 +158,6 @@ function nav() {
   let burger = document.getElementById("burger"),
     nav = document.getElementById("main-nav"),
     slowmo = document.getElementById("slowmo");
-
-  console.log(burger);
-  console.log(nav);
-  console.log(slowmo);
 
   burger.addEventListener("click", function(e) {
     this.classList.toggle("is-open");
@@ -233,7 +228,7 @@ function nav() {
   height: 100%;
   p {
     font-family: "Reem Kufi", sans-serif;
-
+    text-align: center;
     font-style: normal;
     font-weight: normal;
     font-size: 48px;
@@ -529,14 +524,16 @@ function nav() {
     height: 100%;
     p {
       font-family: "Reem Kufi", sans-serif;
-
-      font-style: normal;
-      font-weight: normal;
+      text-align: center;
+      
       font-size: 43px;
-      line-height: 72px;
+      
       /* identical to box height */
 
       color: #ffffff;
+      margin: 0;
+      margin-bottom: 10px;
+      padding: 0;
     }
   }
 

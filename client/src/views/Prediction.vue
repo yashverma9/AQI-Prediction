@@ -23,7 +23,7 @@
       <div class="grid-item grid-item-2">
         <div class="header-content">
           <div class="location-text">
-            <img style="width:40px; height:40px;" src="../images/placeholder.png" alt />
+            <img style="width:45px; height:45px;" src="../images/prediction (1).png" alt />
             <p>Prediction</p>
           </div>
           <div @click="changeUser()" class="button">
@@ -38,7 +38,7 @@
                 <p>{{aqi}}</p>
               </div>
               <p id="status">{{status}}</p>
-              <p id="tag">Predicted AQI</p>
+              <p id="tag">Predicted AQI <span>for tomorrow </span>  </p>
             </div>
           </div>
           <div class="text">
@@ -86,7 +86,6 @@ export default {
       }
     }
 
-    console.log(response.data);
     let params = {
       T: response.data.main.temp,
       TM: response.data.main.temp_max,
@@ -97,13 +96,12 @@ export default {
       V: Number(((response.data.wind.speed * 1000) / 3600).toFixed(2)),
       VM: Number(((response.data.wind.speed * 1000) / 3600).toFixed(2))
     };
-    console.log(params);
 
     this.getPredict(params);
   },
   data() {
     return {
-      aqi: null,
+      aqi: "Loading",
       status: "",
       color: "",
       precautions: [],
@@ -118,14 +116,13 @@ export default {
       this.$router.push(x);
     },
     async getPredict(params) {
-      console.log(params);
       let res = await axios.post(
         "https://aqi-backend.herokuapp.com/getPrediction",
         {
           params
         }
       );
-      console.log(res.data);
+
       this.aqi = res.data;
       if (this.aqi <= 30) {
         this.status = "Good";
@@ -198,8 +195,6 @@ export default {
         ];
       }
       this.final = this.causual;
-      console.log(this.causual);
-      console.log(this.org);
     },
     changeUser() {
       if (this.user == "Causual") {
@@ -217,10 +212,6 @@ function nav() {
   let burger = document.getElementById("burger"),
     nav = document.getElementById("main-nav"),
     slowmo = document.getElementById("slowmo");
-
-  console.log(burger);
-  console.log(nav);
-  console.log(slowmo);
 
   burger.addEventListener("click", function(e) {
     this.classList.toggle("is-open");
@@ -291,7 +282,7 @@ function nav() {
   height: 100%;
   p {
     font-family: "Reem Kufi", sans-serif;
-
+    text-align: center;
     font-style: normal;
     font-weight: normal;
     font-size: 48px;
@@ -428,11 +419,11 @@ function nav() {
   position: absolute;
   top: 70%;
   left: 50%;
-  transform: translate(-50%, 0%);
+  transform: translate(-50%,);
   font-family: Poppins;
 
   font-size: 24px;
-
+  width: fit-content;
   color: #ffffff;
 }
 #tag {
@@ -440,13 +431,17 @@ function nav() {
   padding: 0;
   position: absolute;
   top: 6%;
-  left: 22%;
-  transform: translate(-50%, 0%);
+  left: 4%;
+  // transform: translate(-50%, 0%);
   font-family: Poppins;
-
+  width: fit-content;
   font-size: 18px;
 
   color: #ffffff;
+  span{
+    
+    font-size: 12px;
+  }
 }
 .text {
   //   position: absolute;
@@ -585,7 +580,7 @@ function nav() {
     height: 100%;
     p {
       font-family: "Reem Kufi", sans-serif;
-
+      text-align: center;
       font-style: normal;
       font-weight: normal;
       font-size: 43px;
@@ -601,7 +596,7 @@ function nav() {
     align-items: center;
     justify-content: space-between;
     // border: dotted forestgreen;
-    width: 154px;
+    width: 200px;
     height: 100%;
 
     p {
@@ -615,8 +610,8 @@ function nav() {
       color: #000000;
     }
     img {
-      width: 35px !important;
-      height: 35px !important;
+      width: 40px !important;
+      height: 40px !important;
     }
   }
   .button {
