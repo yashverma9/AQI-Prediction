@@ -123,7 +123,7 @@ export default {
         }
       );
 
-      this.aqi = res.data;
+      this.aqi = 94;
       if (this.aqi <= 30) {
         this.status = "Good";
         this.color = "#00CC00";
